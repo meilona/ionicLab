@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button default-href="'/contacts'" color="light"></ion-back-button>
+    </ion-buttons>
+    <ion-title color="light">Contact detail</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card>
+    <ion-card-content>
+      <ion-item>
+        <ion-label>
+          {{ loadedContact?.nama }}
+        </ion-label>
+      </ion-item>
+      <ion-item *ngFor="let mail of loadedContact?.email">
+        <ion-icon slot="start" name="mail-outline" color="primary"></ion-icon>
+        <ion-label>
+          {{mail}}
+        </ion-label>
+      </ion-item>
+      <ion-item *ngFor="let phone of loadedContact?.phone">
+        <ion-icon slot="start"  name="call-outline" color="primary"></ion-icon>
+        <ion-label>
+          {{phone}}
+        </ion-label>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+

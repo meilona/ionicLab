@@ -1,0 +1,44 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title color="light">Edit Contact</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="onCancel()">
+        <ion-icon name="close" color="light"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form #form="ngForm" (ngSubmit)="onSubmit(form)">
+    <ion-list *ngFor="let contact of loadedContact">
+      <ion-item>
+        <ion-label position="floating">Name</ion-label>
+        <ion-input type="text"
+                   ngModel
+                   name="name"
+                   [(ngModel)]="contact.nama"
+                   required></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">E-mail (Sepparated by Commas)</ion-label>
+        <ion-input type="email"
+                   ngModel
+                   name="email"
+                   [(ngModel)]="contact.email"
+                   required></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Telepon (Sepparated by Commas)</ion-label>
+        <ion-input type="text"
+                   ngModel
+                   name="phoneNumber"
+                   [(ngModel)]="contact.phone"
+                   required></ion-input>
+      </ion-item>
+    </ion-list>
+    <ion-button type="submit" expand="full" color="tertiary" [disabled]="!form.valid">
+      SAVE CONTACT
+    </ion-button>
+  </form>
+</ion-content>
