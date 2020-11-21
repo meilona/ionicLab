@@ -73,9 +73,9 @@ export class AddComponent implements OnInit {
     }
     this.presentLoading().then(() => {
       // const id = newId.toString();
-      const name = form.value.name;
-      const email = form.value.email;
-      const phoneNumber = form.value.phoneNumber;
+      // const name = form.value.name;
+      // const email = form.value.email;
+      // const phoneNumber = form.value.phoneNumber;
       // let email = (form.value.email).split(',');
       // let phoneNumber = (form.value.phoneNumber).split(',');
       // email = this.filteredData(email);
@@ -87,15 +87,20 @@ export class AddComponent implements OnInit {
       //   phoneNumber,
       // };
       // this.contactsService.insertContact(contact);
-      const contact = {
-        nama: name,
-        phone: phoneNumber,
-        email
-      };
+      // const contact = {
+      //   nama: name,
+      //   phone: phoneNumber,
+      //   email
+      // };
 
-      this.contactsService.insertContact(contact).subscribe(res => {
+      this.contactsService.createContact(form.value).then(res => {
         console.log(res);
-      });
+        this.router.navigateByUrl('/contacts');
+      }).catch(error => console.log(error));
+
+      // this.contactsService.createContact(contact).subscribe(res => {
+      //   console.log(res);
+      // });
       this.modalCtrl.dismiss( 'success', 'confirm');
       // this.router.navigate(['/contacts']);
       this.presentToast();

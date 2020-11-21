@@ -19,6 +19,18 @@ const routes: Routes = [
     path: 'week9',
     loadChildren: () => import('./week9/week9.module').then( m => m.Week9PageModule)
   },
+  {
+    path: 'index',
+    loadChildren: () => import('./week10/index/index.module').then( m => m.IndexPageModule)
+  },
+  {
+    path: 'create',
+    loadChildren: () => import('./week10/create/create.module').then( m => m.CreatePageModule)
+  },
+  {
+    path: ':key',
+    loadChildren: () => import('./week10/edit/edit.module').then( m => m.EditPageModule)
+  },
 ];
 
 @NgModule({

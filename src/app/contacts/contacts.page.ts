@@ -38,15 +38,21 @@ export class ContactsPage implements OnInit {
   // }
 
   ionViewWillEnter(){
-    this.contactsService.getAllContacts().subscribe((res) => {
+    this.contactsService.getAllContacts().snapshotChanges().pipe(
+          map(changes =>
+          changes.map(c => ({key: c.payload.key, ...c.payload.val()}))
+          )
+    ).subscribe(data => {
       this.contacts = [ ];
-      this.tempContacts = JSON.parse(JSON.stringify(res));
+      // this.contacts = data;
+      this.tempContacts = data;
       for (this.i = 0; this.i < this.tempContacts.length ; this.i++) {
         this.loadedContacts = this.tempContacts[this.i];
+        console.log(this.loadedContacts);
         const contact = {
-          id: this.loadedContacts.id,
-          nama: this.loadedContacts.nama,
-          phone: this.loadedContacts.phone.split(','),
+          id: this.loadedContacts.key,
+          nama: this.loadedContacts.name,
+          phone: this.loadedContacts.phoneNumber.split(','),
           email: this.loadedContacts.email.split(',')
         };
         console.log(contact);
@@ -89,6 +95,20 @@ export class ContactsPage implements OnInit {
     this.editModal(contactId);
   }
 
+  async editModal(contactId) {
+    const modal = await this.modalCtrl.create({
+      component: EditComponent,
+      componentProps: { selectedContact: contactId }
+    });
+
+    modal.onDidDismiss().then(resultData => {
+      console.log(resultData.data, resultData.role);
+      this.ionViewWillEnter();
+    });
+
+    return await modal.present();
+  }
+
   async presentAlert(event, contactId, slidingItem: IonItemSliding) {
     slidingItem.close();
     const alert = await this.alertCtrl.create({
@@ -109,29 +129,16 @@ export class ContactsPage implements OnInit {
     await  alert.present();
   }
 
-  deleteContact( event, contactId) {
+  deleteContact(event, contactId) {
     console.log(contactId);
-    this.contactsService.deleteContact(contactId).subscribe(res => {
+    // this.contactsService.deleteContact(contactId).subscribe(res => {
+    //   console.log(res);
+    // });
+    this.contactsService.deleteContact(contactId).then(res => {
       console.log(res);
     });
-    this.ionViewWillEnter();
-    this.router.navigate(['/contacts']).then(() => {
-      this.presentToast();
-    });
-  }
-
-  async editModal(contactId) {
-    const modal = await this.modalCtrl.create({
-      component: EditComponent,
-      componentProps: { selectedContact: contactId }
-    });
-
-    modal.onDidDismiss().then(resultData => {
-      console.log(resultData.data, resultData.role);
-      this.ionViewWillEnter();
-    });
-
-    return await modal.present();
+    this.router.navigate(['/contacts']);
+    this.presentToast();
   }
 
 }

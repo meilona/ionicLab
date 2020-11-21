@@ -12,3 +12,6 @@ slide ke kanan, pilih icon edit buat edit data
 pilih icon plus di kanan atas buat add new contact
 klik salah satu contact buat liat detailnya.
 Database menggunakan database lokal phpmyadmin.
+
+Tugas mingguan week 10 :
+Modifikasi page contacts dari week 9,Database menggunakan realtime database dari firebase.

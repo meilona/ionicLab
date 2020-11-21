@@ -3,6 +3,8 @@ import {Contact} from './contact.model';
 import {map, take} from 'rxjs/operators';
 import {BehaviorSubject} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
+import {AngularFireDatabase, AngularFireList} from '@angular/fire/database';
+import {Mahasiswa} from '../week10/mahasiswa';
 
 @Injectable({
   providedIn: 'root'
@@ -12,44 +14,73 @@ export class ContactsService {
   //   new Contact('1', 'John Thor', ['081122334455', '081234567890'], ['john.thor@umn.ac.id', 'hello@johnthor.com'] ),
   //   new Contact('2', 'John Wick', ['087812312300', '081512131415', '088899552151'], ['john.wick@umn.ac.id', 'john.wick@gmail.com'])
   // ]);
-  constructor(private http: HttpClient) { }
+
+  private dbPath = '/contact';
+  contactRef: AngularFireList<Contact> = null;
+
+  constructor(private db: AngularFireDatabase) {
+    this.contactRef = db.list(this.dbPath);
+  }
 
   getAllContacts() {
-    return this.http.get('http://192.168.64.3/select_all_kontak.php');
+    return this.contactRef;
   }
 
-  getContact(id: string) {
-    const data = JSON.stringify({id});
-    return this.http.post<any>('http://192.168.64.3/select_kontak.php', data);
+  createContact(contact: Contact): any {
+    return this.contactRef.push(contact);
   }
 
-  insertContact(newContact: any){
-    const contact = {
-      id: newContact.id,
-      nama: newContact.nama,
-      phone: newContact.phone,
-      email: newContact.email,
-    };
-    const data = JSON.stringify(contact);
-    return this.http.post<any>('http://192.168.64.3/insert_kontak.php', data);
+  updateContact(key: string, value: any): Promise<void> {
+    return this.contactRef.update(key, value);
   }
 
-  editContact(newContact: any){
-    const contact = {
-      id: newContact.id,
-      nama: newContact.name,
-      phone: newContact.phoneNumber,
-      email: newContact.email,
-    };
-    // console.log(contact);
-    const data = JSON.stringify(contact);
-    return this.http.post<any>('http://192.168.64.3/update_kontak.php', data);
+  deleteContact(key: string): Promise<void> {
+    return this.contactRef.remove(key);
   }
 
-  deleteContact(id: string){
-    const data = JSON.stringify({id});
-    return this.http.post<any>('http://192.168.64.3/delete_kontak.php', data);
+  deleteAllContact(): Promise<void> {
+    return this.contactRef.remove();
   }
+
+  // constructor(private http: HttpClient) { }
+  //
+  // // phpmyadmin
+  // getAllContacts() {
+  //   return this.http.get('http://192.168.64.3/select_all_kontak.php');
+  // }
+  //
+  // getContact(id: string) {
+  //   const data = JSON.stringify({id});
+  //   return this.http.post<any>('http://192.168.64.3/select_kontak.php', data);
+  // }
+  //
+  // insertContact(newContact: any){
+  //   const contact = {
+  //     id: newContact.id,
+  //     nama: newContact.nama,
+  //     phone: newContact.phone,
+  //     email: newContact.email,
+  //   };
+  //   const data = JSON.stringify(contact);
+  //   return this.http.post<any>('http://192.168.64.3/insert_kontak.php', data);
+  // }
+  //
+  // editContact(newContact: any){
+  //   const contact = {
+  //     id: newContact.id,
+  //     nama: newContact.name,
+  //     phone: newContact.phoneNumber,
+  //     email: newContact.email,
+  //   };
+  //   // console.log(contact);
+  //   const data = JSON.stringify(contact);
+  //   return this.http.post<any>('http://192.168.64.3/update_kontak.php', data);
+  // }
+  //
+  // deleteContact(id: string){
+  //   const data = JSON.stringify({id});
+  //   return this.http.post<any>('http://192.168.64.3/delete_kontak.php', data);
+  // }
 
   // getAllContacts(){
   //   return this.contacts.asObservable();
