@@ -27,9 +27,21 @@ const routes: Routes = [
     path: 'create',
     loadChildren: () => import('./week10/create/create.module').then( m => m.CreatePageModule)
   },
+  // {
+  //   path: ':key',
+  //   loadChildren: () => import('./week10/edit/edit.module').then( m => m.EditPageModule)
+  // },
   {
-    path: ':key',
-    loadChildren: () => import('./week10/edit/edit.module').then( m => m.EditPageModule)
+    path: 'login',
+    loadChildren: () => import('./login/login.module').then( m => m.LoginPageModule)
+  },
+  {
+    path: 'register',
+    loadChildren: () => import('./register/register.module').then( m => m.RegisterPageModule)
+  },
+  {
+    path: 'dashboard',
+    loadChildren: () => import('./dashboard/dashboard.module').then( m => m.DashboardPageModule)
   },
 ];
 

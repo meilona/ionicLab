@@ -1,10 +1,11 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {LoadingController, ModalController, ToastController} from '@ionic/angular';
+import {LoadingController, ModalController, NavController, ToastController} from '@ionic/angular';
 import {ContactsService} from '../../contacts.service';
 import {Router} from '@angular/router';
 import {Contact} from '../../contact.model';
 import {NgForm} from '@angular/forms';
 import {Subscription} from 'rxjs';
+import {AuthService} from '../../services/auth.service';
 
 @Component({
   selector: 'app-add',
@@ -26,6 +27,7 @@ export class AddComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+
   }
 
   onCancel(){
