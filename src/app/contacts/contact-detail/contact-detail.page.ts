@@ -1,10 +1,12 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Contact} from '../contact.model';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ContactsService} from '../contacts.service';
 import {AlertController, ToastController} from '@ionic/angular';
 import {Observable, Subscription} from 'rxjs';
 import {AngularFireDatabase} from '@angular/fire/database';
+
+declare var google: any;
 
 @Component({
   selector: 'app-contact-detail',
@@ -13,6 +15,8 @@ import {AngularFireDatabase} from '@angular/fire/database';
 })
 
 export class ContactDetailPage implements OnInit, OnDestroy {
+  map: any;
+  @ViewChild('map', {read: ElementRef, static: false}) mapRef: ElementRef;
   contacts: any;
   tempContacts: any[];
   loadedContact: any;
@@ -43,6 +47,12 @@ export class ContactDetailPage implements OnInit, OnDestroy {
         };
         console.log(contact);
         this.loadedContact = contact;
+
+        const userPos = {
+          lat: this.contacts.latitude,
+          lng: this.contacts.longitude
+        };
+        this.showMap(userPos);
       });
 
       // week9
@@ -72,6 +82,27 @@ export class ContactDetailPage implements OnInit, OnDestroy {
       // };
       // console.log(contact);
     });
+  }
+
+  showMap(pos: any) {
+    const location = new google.maps.LatLng(pos.lat, pos.lng);
+    const options = {
+      center: location,
+      zoom: 13,
+      disableDefaultUI: true
+    };
+    this.map = new google.maps.Map(this.mapRef.nativeElement, options);
+
+    // umnPos: any = {
+    //   lat: -6.256081,
+    //   lng: 106.618755
+    // };
+    // The marker, positioned at UMN
+    const marker = new google.maps.Marker({
+      position: pos,
+      map: this.map,
+    });
+    console.log(pos);
   }
 
   ngOnDestroy() {

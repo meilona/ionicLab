@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {LoadingController, ModalController, NavController, ToastController} from '@ionic/angular';
 import {ContactsService} from '../../contacts.service';
 import {Router} from '@angular/router';
@@ -6,6 +6,7 @@ import {Contact} from '../../contact.model';
 import {NgForm} from '@angular/forms';
 import {Subscription} from 'rxjs';
 import {AuthService} from '../../services/auth.service';
+import {AngularFireDatabase} from '@angular/fire/database';
 
 @Component({
   selector: 'app-add',
@@ -17,6 +18,10 @@ export class AddComponent implements OnInit {
   contacts: Contact[];
   private contactsSub: Subscription;
   private i: number;
+  lat: any;
+  long: any;
+
+  @ViewChild('form') formT: NgForm;
 
   constructor(
       private modalCtrl: ModalController,
@@ -27,7 +32,10 @@ export class AddComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+  }
 
+  ionViewWillEnter(){
+    this.getCurrentLoc();
   }
 
   onCancel(){
@@ -66,6 +74,19 @@ export class AddComponent implements OnInit {
   //     }
   //   }
   // }
+
+  getCurrentLoc() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position: Position) => {
+        this.lat = position.coords.latitude;
+        this.long = position.coords.longitude;
+        console.log(this.lat);
+        console.log(this.long);
+        this.formT.control.get('latitude').patchValue(this.lat);
+        this.formT.control.get('longitude').patchValue(this.long);
+      });
+    }
+  }
 
   onSubmit(form: NgForm) {
     console.log(form);

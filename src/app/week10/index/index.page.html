@@ -11,7 +11,7 @@
   <ion-list>
     <ion-item *ngFor="let student of mahasiswa">
       <ion-label>{{student.nim}} - {{student.nama}} - {{student.prodi}}</ion-label>
-      <ion-button routerLink="/{{student.key}}">EDIT</ion-button>
+      <ion-button routerLink="/edit/{{student.key}}">EDIT</ion-button>
       <ion-button (click)="delete($event, student.nim)">DELETE</ion-button>
     </ion-item>
   </ion-list>

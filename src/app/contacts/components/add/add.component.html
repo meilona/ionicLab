@@ -33,6 +33,27 @@
                    name="phoneNumber"
                    required></ion-input>
       </ion-item>
+      <ion-item>
+        <ion-label>Alamat</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Latitude</ion-label>
+        <ion-input type="decimal"
+                   ngModel
+                   name="latitude"
+                   id="latitude"
+                   required
+                   #latCtrl="ngModel"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Longitude</ion-label>
+        <ion-input type="decimal"
+                   ngModel
+                   name="longitude"
+                   id="longitude"
+                   required
+                   #longCtrl="ngModel"></ion-input>
+      </ion-item>
     </ion-list>
     <ion-button type="submit" expand="full" color="tertiary" [disabled]="!form.valid">
       SAVE CONTACT

@@ -10,6 +10,7 @@ import {Mahasiswa} from '../week10/mahasiswa';
   providedIn: 'root'
 })
 export class ContactsService {
+  pos: any;
   // private contacts = new BehaviorSubject<Contact[]>([
   //   new Contact('1', 'John Thor', ['081122334455', '081234567890'], ['john.thor@umn.ac.id', 'hello@johnthor.com'] ),
   //   new Contact('2', 'John Wick', ['087812312300', '081512131415', '088899552151'], ['john.wick@umn.ac.id', 'john.wick@gmail.com'])
@@ -22,11 +23,31 @@ export class ContactsService {
     this.contactRef = db.list(this.dbPath);
   }
 
+  getCurrentLoc() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position: Position) => {
+        this.pos = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+        console.log(this.pos);
+      });
+    }
+  }
+
   getAllContacts() {
     return this.contactRef;
   }
 
   createContact(contact: Contact): any {
+    // this.getCurrentLoc();
+    // const ctc: any = {
+    //   name : contact.name,
+    //   phoneNumber : contact.phoneNumber,
+    //   email : contact.email,
+    //   pos : this.pos,
+    // };
+    console.log(contact);
     return this.contactRef.push(contact);
   }
 

@@ -39,7 +39,6 @@ export class EditComponent implements OnInit {
     //   this.loadedContact = res;
     //   console.log(res);
     // });
-
     this.db.object('/contact/' + this.selectedContact).valueChanges().subscribe(data => {
       console.log('data:', data);
       this.loadedContact = data;

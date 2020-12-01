@@ -15,3 +15,9 @@ Database menggunakan database lokal phpmyadmin.
 
 Tugas mingguan week 10 :
 Modifikasi page contacts dari week 9,Database menggunakan realtime database dari firebase.
+
+Tugas mingguan week 11 :
+Modifikasi page contacts dari week 10, hanya bisa melihat contact list dan detail contact jika belum login.
+
+Tugas mingguan week 12 :
+Modifikasi Contacts dari week 11, bisa menambahkan kontak beserta lokasi rumah dan menampilkan map dan marker pada lokasi rumah kontak.

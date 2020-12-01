@@ -27,10 +27,10 @@ const routes: Routes = [
     path: 'create',
     loadChildren: () => import('./week10/create/create.module').then( m => m.CreatePageModule)
   },
-  // {
-  //   path: ':key',
-  //   loadChildren: () => import('./week10/edit/edit.module').then( m => m.EditPageModule)
-  // },
+  {
+    path: 'edit/:key',
+    loadChildren: () => import('./week10/edit/edit.module').then( m => m.EditPageModule)
+  },
   {
     path: 'login',
     loadChildren: () => import('./login/login.module').then( m => m.LoginPageModule)
@@ -42,6 +42,18 @@ const routes: Routes = [
   {
     path: 'dashboard',
     loadChildren: () => import('./dashboard/dashboard.module').then( m => m.DashboardPageModule)
+  },
+  {
+    path: 'display-map',
+    loadChildren: () => import('./display-map/display-map.module').then( m => m.DisplayMapPageModule)
+  },
+  {
+    path: 'current-loc',
+    loadChildren: () => import('./current-loc/current-loc.module').then( m => m.CurrentLocPageModule)
+  },
+  {
+    path: 'loc-coordinate',
+    loadChildren: () => import('./loc-coordinate/loc-coordinate.module').then( m => m.LocCoordinatePageModule)
   },
 ];
 
