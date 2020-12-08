@@ -55,6 +55,10 @@ const routes: Routes = [
     path: 'loc-coordinate',
     loadChildren: () => import('./loc-coordinate/loc-coordinate.module').then( m => m.LocCoordinatePageModule)
   },
+  {
+    path: 'home',
+    loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
+  },
 ];
 
 @NgModule({

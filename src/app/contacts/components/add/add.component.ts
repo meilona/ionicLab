@@ -1,5 +1,5 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
-import {LoadingController, ModalController, NavController, ToastController} from '@ionic/angular';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {LoadingController, ModalController, NavController, Platform, ToastController} from '@ionic/angular';
 import {ContactsService} from '../../contacts.service';
 import {Router} from '@angular/router';
 import {Contact} from '../../contact.model';
@@ -7,6 +7,8 @@ import {NgForm} from '@angular/forms';
 import {Subscription} from 'rxjs';
 import {AuthService} from '../../services/auth.service';
 import {AngularFireDatabase} from '@angular/fire/database';
+import {Camera, CameraResultType, CameraSource, Capacitor} from '@capacitor/core';
+import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-add',
@@ -14,12 +16,15 @@ import {AngularFireDatabase} from '@angular/fire/database';
   styleUrls: ['./add.component.scss'],
 })
 export class AddComponent implements OnInit {
+  @ViewChild('filePicker', { static: false }) filePickerRef: ElementRef<HTMLInputElement>;
   @Input() selectedContact: string;
   contacts: Contact[];
   private contactsSub: Subscription;
   private i: number;
   lat: any;
   long: any;
+  photo: SafeResourceUrl;
+  isDesktop: boolean;
 
   @ViewChild('form') formT: NgForm;
 
@@ -28,10 +33,16 @@ export class AddComponent implements OnInit {
       private loadingCtrl: LoadingController,
       private toastController: ToastController,
       private contactsService: ContactsService,
-      private router: Router
+      private router: Router,
+      private platform: Platform,
+      private sanitizer: DomSanitizer
   ) { }
 
   ngOnInit() {
+    if ((this.platform.is('mobile') && this.platform.is('hybrid')) ||
+        this.platform.is('desktop')){
+      this.isDesktop = true;
+    }
   }
 
   ionViewWillEnter(){
@@ -139,5 +150,37 @@ export class AddComponent implements OnInit {
       }
     }
     return tempArr;
+  }
+
+  async getPicture(type: string){
+    if (!Capacitor.isPluginAvailable('Camera') || (this.isDesktop && type === 'gallery')){
+      this.filePickerRef.nativeElement.click();
+      return;
+    }
+    const image = await Camera.getPhoto({
+      quality: 100,
+      width: 400,
+      allowEditing: false,
+      resultType: CameraResultType.DataUrl,
+      source: CameraSource.Prompt
+    });
+
+    this.photo = this.sanitizer.bypassSecurityTrustResourceUrl(image && (image.dataUrl));
+  }
+
+  onFileChoose(event: Event){
+    const file = (event.target as HTMLInputElement).files[0];
+    const pattern = /image-*/;
+    const reader = new FileReader();
+
+    if(!file.type.match(pattern)){
+      console.log('File Format not supported');
+      return;
+    }
+
+    reader.onload = () => {
+      this.photo = reader.result.toString();
+    };
+    reader.readAsDataURL(file);
   }
 }
