@@ -21,3 +21,9 @@ Modifikasi page contacts dari week 10, hanya bisa melihat contact list dan detai
 
 Tugas mingguan week 12 :
 Modifikasi Contacts dari week 11, bisa menambahkan kontak beserta lokasi rumah dan menampilkan map dan marker pada lokasi rumah kontak.
+
+Tugas mingguan week 13 :
+Modifikasi Contacts dari week 12, camera.
+
+Tugas mingguan week 14 :
+Modifikasi Contacts dari week 13, menyimpan photo ke firebase storage.

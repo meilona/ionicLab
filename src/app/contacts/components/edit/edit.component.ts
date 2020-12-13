@@ -1,11 +1,14 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {Contact} from '../../contact.model';
-import {LoadingController, ModalController, ToastController} from '@ionic/angular';
+import {LoadingController, ModalController, Platform, ToastController} from '@ionic/angular';
 import {ContactsService} from '../../contacts.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subscription} from 'rxjs';
 import {NgForm} from '@angular/forms';
 import {AngularFireDatabase} from '@angular/fire/database';
+import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
+import {AngularFireStorage} from '@angular/fire/storage';
+import {Camera, CameraResultType, CameraSource, Capacitor} from '@capacitor/core';
 
 @Component({
   selector: 'app-edit',
@@ -13,11 +16,14 @@ import {AngularFireDatabase} from '@angular/fire/database';
   styleUrls: ['./edit.component.scss'],
 })
 export class EditComponent implements OnInit {
+  @ViewChild('filePicker', { static: false }) filePickerRef: ElementRef<HTMLInputElement>;
   @Input() selectedContact: string;
   // loadedContact: Contact;
   loadedContact: any;
   private contactsSub: Subscription;
   private i: number;
+  photo: SafeResourceUrl;
+  isDesktop: boolean;
 
   @ViewChild('form', null) form: NgForm;
 
@@ -28,10 +34,18 @@ export class EditComponent implements OnInit {
       private toastController: ToastController,
       private contactsService: ContactsService,
       private db: AngularFireDatabase,
-      private router: Router
+      private router: Router,
+      private platform: Platform,
+      private sanitizer: DomSanitizer,
+      private storage: AngularFireStorage
   ) { }
 
   ngOnInit() {
+    if ((this.platform.is('mobile') && this.platform.is('hybrid')) ||
+        this.platform.is('desktop')){
+      this.isDesktop = true;
+    }
+
     // this.contactsSub = this.contactsService.getContact(this.selectedContact).subscribe(contacts => {
     //   this.loadedContact = contacts;
     // });
@@ -43,6 +57,12 @@ export class EditComponent implements OnInit {
       console.log('data:', data);
       this.loadedContact = data;
       console.log('this.mahasiswa:', this.loadedContact);
+
+      const ref = this.storage.ref('photos/' + this.loadedContact.name + '.jpg');
+      ref.getDownloadURL().subscribe(res => {
+        console.log('res', res);
+        this.photo = res;
+      });
     });
 
     // Set Form Value
@@ -68,6 +88,8 @@ export class EditComponent implements OnInit {
         console.log(res);
         this.router.navigateByUrl('/contacts');
       }).catch(error => console.log(error));
+
+      this.upload(form.value.name);
 
       form.reset();
       this.modalCtrl.dismiss( 'success', 'confirm');
@@ -152,4 +174,62 @@ export class EditComponent implements OnInit {
   //   this.presentToast();
   // }
 
+  async getPicture(type: string){
+    if (!Capacitor.isPluginAvailable('Camera') || (this.isDesktop && type === 'gallery')){
+      this.filePickerRef.nativeElement.click();
+      return;
+    }
+
+    const image = await Camera.getPhoto({
+      quality: 100,
+      width: 400,
+      allowEditing: false,
+      resultType: CameraResultType.DataUrl,
+      source: CameraSource.Prompt,
+      saveToGallery: true
+    });
+    console.log(image);
+    this.photo = image.dataUrl;
+    // this.photo = this.sanitizer.bypassSecurityTrustResourceUrl(image && (image.dataUrl));
+    console.log('this.photo: ', this.photo);
+  }
+
+  onFileChoose(event: Event){
+    const file = (event.target as HTMLInputElement).files[0];
+    const pattern = /image-*/;
+    const reader = new FileReader();
+
+    if (!file.type.match(pattern)){
+      console.log('File Format not supported');
+      return;
+    }
+
+    reader.onload = () => {
+      this.photo = reader.result.toString();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  upload(name) {
+    const file = this.dataURLtoFile(this.photo, 'file');
+    console.log('file:', file);
+    const filepath = 'photos/' + name + '.jpg';
+    const ref = this.storage.ref(filepath);
+    const task = ref.put(file);
+  }
+
+  dataURLtoFile(dataurl, filename) {
+
+    const arr = dataurl.split(',');
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+
+    return new File([u8arr], filename, {type: mime});
+  }
 }

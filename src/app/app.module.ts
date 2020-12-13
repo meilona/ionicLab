@@ -13,6 +13,7 @@ import {HttpClientModule} from '@angular/common/http';
 // firebase
 import {AngularFireModule} from '@angular/fire';
 import {AngularFireDatabaseModule} from '@angular/fire/database';
+import {AngularFireStorageModule} from '@angular/fire/storage';
 
 // environment
 import {environment} from '../environments/environment';
@@ -25,6 +26,7 @@ import {environment} from '../environments/environment';
     AppRoutingModule,
     HttpClientModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFireStorageModule,
     AngularFireDatabaseModule],
   providers: [
     StatusBar,

@@ -9,6 +9,7 @@ import {AuthService} from '../../services/auth.service';
 import {AngularFireDatabase} from '@angular/fire/database';
 import {Camera, CameraResultType, CameraSource, Capacitor} from '@capacitor/core';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
+import {AngularFireStorage} from '@angular/fire/storage';
 
 @Component({
   selector: 'app-add',
@@ -35,8 +36,15 @@ export class AddComponent implements OnInit {
       private contactsService: ContactsService,
       private router: Router,
       private platform: Platform,
-      private sanitizer: DomSanitizer
-  ) { }
+      private sanitizer: DomSanitizer,
+      private storage: AngularFireStorage
+  ) {
+    // const ref = this.storage.ref('photos/' + name + '.jpg');
+    // ref.getDownloadURL().subscribe(res => {
+    //   console.log('res', res);
+    //   this.photo = res;
+    // });
+  }
 
   ngOnInit() {
     if ((this.platform.is('mobile') && this.platform.is('hybrid')) ||
@@ -107,7 +115,8 @@ export class AddComponent implements OnInit {
     }
     this.presentLoading().then(() => {
       // const id = newId.toString();
-      // const name = form.value.name;
+      const name = form.value.name.trim();
+      console.log(name);
       // const email = form.value.email;
       // const phoneNumber = form.value.phoneNumber;
       // let email = (form.value.email).split(',');
@@ -127,6 +136,7 @@ export class AddComponent implements OnInit {
       //   email
       // };
 
+      this.upload(name);
       this.contactsService.createContact(form.value).then(res => {
         console.log(res);
         this.router.navigateByUrl('/contacts');
@@ -157,15 +167,19 @@ export class AddComponent implements OnInit {
       this.filePickerRef.nativeElement.click();
       return;
     }
+
     const image = await Camera.getPhoto({
       quality: 100,
       width: 400,
       allowEditing: false,
       resultType: CameraResultType.DataUrl,
-      source: CameraSource.Prompt
+      source: CameraSource.Prompt,
+      saveToGallery: true
     });
-
-    this.photo = this.sanitizer.bypassSecurityTrustResourceUrl(image && (image.dataUrl));
+    console.log(image);
+    this.photo = image.dataUrl;
+    // this.photo = this.sanitizer.bypassSecurityTrustResourceUrl(image && (image.dataUrl));
+    console.log('this.photo: ', this.photo);
   }
 
   onFileChoose(event: Event){
@@ -173,7 +187,7 @@ export class AddComponent implements OnInit {
     const pattern = /image-*/;
     const reader = new FileReader();
 
-    if(!file.type.match(pattern)){
+    if (!file.type.match(pattern)){
       console.log('File Format not supported');
       return;
     }
@@ -182,5 +196,28 @@ export class AddComponent implements OnInit {
       this.photo = reader.result.toString();
     };
     reader.readAsDataURL(file);
+  }
+
+  upload(name) {
+    const file = this.dataURLtoFile(this.photo, 'file');
+    console.log('file:', file);
+    const filepath = 'photos/' + name + '.jpg';
+    const ref = this.storage.ref(filepath);
+    const task = ref.put(file);
+  }
+
+  dataURLtoFile(dataurl, filename) {
+
+    const arr = dataurl.split(',');
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+
+    return new File([u8arr], filename, {type: mime});
   }
 }

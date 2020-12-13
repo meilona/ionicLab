@@ -9,12 +9,15 @@
 
 <ion-content>
   <ion-card>
-    <ion-card-content>
+    <ion-card-header *ngIf="photo">
       <ion-item>
-        <ion-label>
-          {{ loadedContact?.nama }}
-        </ion-label>
+        <ion-avatar>
+          <img [src]="photo">
+        </ion-avatar>
+        <h2> {{ loadedContact?.nama }} </h2>
       </ion-item>
+    </ion-card-header>
+    <ion-card-content>
       <ion-item *ngFor="let mail of loadedContact?.email">
         <ion-icon slot="start" name="mail-outline" color="primary"></ion-icon>
         <ion-label>

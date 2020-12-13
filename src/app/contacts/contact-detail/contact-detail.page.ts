@@ -5,6 +5,8 @@ import {ContactsService} from '../contacts.service';
 import {AlertController, ToastController} from '@ionic/angular';
 import {Observable, Subscription} from 'rxjs';
 import {AngularFireDatabase} from '@angular/fire/database';
+import {SafeResourceUrl} from '@angular/platform-browser';
+import {AngularFireStorage} from '@angular/fire/storage';
 
 declare var google: any;
 
@@ -22,12 +24,14 @@ export class ContactDetailPage implements OnInit, OnDestroy {
   loadedContact: any;
   i: number;
   private contactsSub: Subscription;
+  photo: SafeResourceUrl;
 
   constructor(
       private activatedRoute: ActivatedRoute,
       private db: AngularFireDatabase,
-      private contactsService: ContactsService
-  ) {}
+      private contactsService: ContactsService,
+      private storage: AngularFireStorage
+  ) { }
 
   ngOnInit() {
     this.activatedRoute.paramMap.subscribe(paramMap => {
@@ -45,6 +49,13 @@ export class ContactDetailPage implements OnInit, OnDestroy {
           phone: this.contacts.phoneNumber.split(','),
           email: this.contacts.email.split(',')
         };
+
+        const ref = this.storage.ref('photos/' + contact.nama + '.jpg');
+        ref.getDownloadURL().subscribe(res => {
+          console.log('res', res);
+          this.photo = res;
+        });
+
         console.log(contact);
         this.loadedContact = contact;
 
